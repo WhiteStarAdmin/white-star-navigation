@@ -4,13 +4,13 @@ function toggleBoarding() {
     const button = document.getElementById("boardingButton");
     const status = document.getElementById("boardingStatus");
 
-    boardingOpen = !boardingOpen;
-
     if (boardingOpen) {
-        button.textContent = "⚓ NOW BOARDING";
-        status.textContent = "Passenger registration is currently OPEN.";
+        button.innerHTML = "🚫 BOARDING CLOSED";
+        status.innerHTML = "Passenger registration is currently CLOSED.";
     } else {
-        button.textContent = "🚫 BOARDING CLOSED";
-        status.textContent = "Passenger registration is currently CLOSED.";
+        button.innerHTML = "⚓ NOW BOARDING";
+        status.innerHTML = "Passenger registration is currently OPEN.";
     }
+
+    boardingOpen = !boardingOpen;
 }
