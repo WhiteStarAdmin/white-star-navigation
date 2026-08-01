@@ -1,19 +1,35 @@
 const db = window.db;
-const { doc, getDoc, updateDoc } = window;
+const { doc, onSnapshot, updateDoc } = window;
 
-let boardingOpen = true;
+const boardingRef = doc(db, "system", "boarding");
 
-function toggleBoarding() {
-    const button = document.getElementById("boardingButton");
-    const status = document.getElementById("boardingStatus");
+const button = document.getElementById("boardingButton");
+const status = document.getElementById("boardingStatus");
+
+let boardingOpen = false;
+
+// Escuchar cambios en tiempo real
+onSnapshot(boardingRef, (snapshot) => {
+
+    if (!snapshot.exists()) return;
+
+    boardingOpen = snapshot.data().open;
 
     if (boardingOpen) {
-        button.innerHTML = "🚫 BOARDING CLOSED";
-        status.innerHTML = "Passenger registration is currently CLOSED.";
-    } else {
         button.innerHTML = "⚓ NOW BOARDING";
         status.innerHTML = "Passenger registration is currently OPEN.";
+    } else {
+        button.innerHTML = "🚫 BOARDING CLOSED";
+        status.innerHTML = "Passenger registration is currently CLOSED.";
     }
 
-    boardingOpen = !boardingOpen;
-}
+});
+
+// Cambiar estado
+window.toggleBoarding = async function () {
+
+    await updateDoc(boardingRef, {
+        open: !boardingOpen
+    });
+
+};
