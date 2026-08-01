@@ -68,7 +68,12 @@ import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/fi
   // Initialize Firebase
 window.firebaseApp = initializeApp(firebaseConfig);
 window.db = getFirestore(window.firebaseApp);
-        </script>   
+
+window.doc = doc;
+window.getDoc = getDoc;
+window.updateDoc = updateDoc;     
+     
+ </script>   
 <script src="script.js"></script>   
 </body>
 </html>
