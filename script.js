@@ -1,3 +1,6 @@
+const db = window.db;
+const { doc, getDoc, updateDoc } = window;
+
 let boardingOpen = true;
 
 function toggleBoarding() {
