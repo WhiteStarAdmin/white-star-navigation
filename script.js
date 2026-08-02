@@ -28,8 +28,19 @@ onSnapshot(boardingRef, (snapshot) => {
 // Cambiar estado
 window.toggleBoarding = async function () {
 
-    await updateDoc(boardingRef, {
-        open: !boardingOpen
-    });
+    try {
+
+        await updateDoc(boardingRef, {
+            open: !boardingOpen
+        });
+
+        alert("Actualizado");
+
+    } catch (e) {
+
+        console.error(e);
+        alert(e.message);
+
+    }
 
 };
