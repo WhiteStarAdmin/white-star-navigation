@@ -125,7 +125,6 @@
 
 <body>
 
-
 <main class="boarding-page">
 
     <h1>North Star Navigation</h1>
@@ -139,9 +138,7 @@
         id="loading"
         class="boarding-box"
     >
-
         Generating boarding pass...
-
     </div>
 
 
@@ -184,6 +181,7 @@
                 DOWNLOAD BOARDING PASS
             </button>
 
+
             <button
                 type="button"
                 onclick="window.location.href='index.html'"
@@ -208,7 +206,6 @@
 
 
 <script>
-
 
 /* =========================================================
    ELEMENTS
@@ -242,7 +239,6 @@ const downloadButton =
 
 const savedTicket =
     localStorage.getItem("generatedTicket");
-
 
 const savedPassenger =
     localStorage.getItem("currentPassenger");
@@ -283,13 +279,12 @@ try {
    ========================================================= */
 
 let passenger =
-    ticketData.passenger || "";
+    String(
+        ticketData.passenger || ""
+    ).trim();
 
 
-if (
-    !passenger &&
-    savedPassenger
-) {
+if (!passenger && savedPassenger) {
 
     try {
 
@@ -297,7 +292,9 @@ if (
             JSON.parse(savedPassenger);
 
         passenger =
-            passengerData.characterName || "";
+            String(
+                passengerData.characterName || ""
+            ).trim();
 
     } catch {
 
@@ -310,8 +307,12 @@ if (
 
 if (!passenger) {
 
-    passenger =
-        "PASSENGER";
+    loading.textContent =
+        "No Character Name was found.";
+
+    throw new Error(
+        "Character Name is missing."
+    );
 
 }
 
@@ -321,7 +322,7 @@ characterNameElement.textContent =
 
 
 /* =========================================================
-   TICKET INFORMATION
+   TICKET DATA
    ========================================================= */
 
 const className =
@@ -330,21 +331,51 @@ const className =
     ).toUpperCase();
 
 
+const template =
+    String(
+        ticketData.template || ""
+    ).toUpperCase();
+
+
+const category =
+    String(
+        ticketData.category || "PASAJERO"
+    );
+
+
 const cabin =
-    ticketData.cabin || "—";
+    String(
+        ticketData.cabin || "—"
+    );
+
+
+const destination =
+    String(
+        ticketData.destination || "REMOTO"
+    );
 
 
 const date =
-    ticketData.date || "—";
+    String(
+        ticketData.date || "—"
+    );
 
 
 const time =
-    ticketData.time || "—";
+    String(
+        ticketData.time || "—"
+    );
 
 
 const code =
-    ticketData.code || "—";
+    String(
+        ticketData.code || "—"
+    );
 
+
+/* =========================================================
+   INFORMATION BELOW TICKET
+   ========================================================= */
 
 ticketDetails.innerHTML = `
 
@@ -375,43 +406,28 @@ ticketDetails.innerHTML = `
 
 
 /* =========================================================
-   SELECT CORRECT TICKET IMAGE
+   TICKET IMAGE
    ========================================================= */
-
-const template =
-    String(
-        ticketData.template || ""
-    ).toUpperCase();
-
 
 const imageMap = {
 
-    A:
-        "assets/tickets/ticket_first_a.png",
+    A: "assets/tickets/ticket_first_a.png",
 
-    B:
-        "assets/tickets/ticket_first_b.png",
+    B: "assets/tickets/ticket_first_b.png",
 
-    C:
-        "assets/tickets/ticket_first_c.png",
+    C: "assets/tickets/ticket_first_c.png",
 
-    D:
-        "assets/tickets/ticket_second_d.png",
+    D: "assets/tickets/ticket_second_d.png",
 
-    E:
-        "assets/tickets/ticket_second_e.png",
+    E: "assets/tickets/ticket_second_e.png",
 
-    F:
-        "assets/tickets/ticket_second_f.png",
+    F: "assets/tickets/ticket_second_f.png",
 
-    G:
-        "assets/tickets/ticket_third_g.png",
+    G: "assets/tickets/ticket_third_g.png",
 
-    H:
-        "assets/tickets/ticket_third_h.png",
+    H: "assets/tickets/ticket_third_h.png",
 
-    I:
-        "assets/tickets/ticket_third_i.png"
+    I: "assets/tickets/ticket_third_i.png"
 
 };
 
@@ -426,14 +442,14 @@ if (!imagePath) {
         "The ticket template could not be identified.";
 
     throw new Error(
-        "Invalid ticket template."
+        "Invalid ticket template: " + template
     );
 
 }
 
 
 /* =========================================================
-   LOAD IMAGE
+   LOAD ORIGINAL TICKET
    ========================================================= */
 
 const ticketImage =
@@ -443,6 +459,9 @@ const ticketImage =
 ticketImage.onload =
     function () {
 
+        /*
+         * The canvas uses the original ticket dimensions.
+         */
 
         canvas.width =
             ticketImage.naturalWidth;
@@ -451,13 +470,16 @@ ticketImage.onload =
             ticketImage.naturalHeight;
 
 
+        /*
+         * Draw the original ticket.
+         */
+
         ctx.clearRect(
             0,
             0,
             canvas.width,
             canvas.height
         );
-
 
         ctx.drawImage(
             ticketImage,
@@ -466,15 +488,105 @@ ticketImage.onload =
         );
 
 
+        /*
+         * Now write ALL passenger information
+         * directly onto the ticket.
+         */
+
+        ctx.fillStyle =
+            "#171717";
+
+        ctx.textBaseline =
+            "middle";
+
+        ctx.textAlign =
+            "left";
+
+        ctx.font =
+            "bold 26px Georgia, serif";
+
+
+        /* PASAJERO */
+
+        ctx.fillText(
+            passenger,
+            355,
+            219
+        );
+
+
+        /* CATEGORÍA */
+
+        ctx.fillText(
+            category,
+            355,
+            275
+        );
+
+
+        /* CAMAROTE */
+
+        ctx.fillText(
+            cabin,
+            555,
+            330
+        );
+
+
+        /* DESTINO */
+
+        ctx.fillText(
+            destination,
+            525,
+            386
+        );
+
+
+        /*
+         * RIGHT SIDE
+         */
+
+        ctx.textAlign =
+            "center";
+
+        ctx.font =
+            "bold 24px Georgia, serif";
+
+
+        /* FECHA */
+
+        ctx.fillText(
+            date,
+            1300,
+            320
+        );
+
+
+        /* CÓDIGO */
+
+        ctx.fillText(
+            code,
+            1300,
+            418
+        );
+
+
+        /*
+         * Show completed boarding pass.
+         */
+
         loading.style.display =
             "none";
-
 
         boardingContent.style.display =
             "block";
 
     };
 
+
+/* =========================================================
+   IMAGE ERROR
+   ========================================================= */
 
 ticketImage.onerror =
     function () {
@@ -484,8 +596,17 @@ ticketImage.onerror =
 
         loading.classList.add("error");
 
+        console.error(
+            "Ticket image failed:",
+            imagePath
+        );
+
     };
 
+
+/* =========================================================
+   START IMAGE LOAD
+   ========================================================= */
 
 ticketImage.src =
     imagePath;
@@ -515,10 +636,17 @@ downloadButton.addEventListener(
     "click",
     function () {
 
+        /*
+         * IMPORTANT:
+         *
+         * We use the ALREADY COMPLETED canvas.
+         * Therefore the downloaded ticket contains
+         * the passenger information too.
+         */
 
         if (
-            !ticketImage.complete ||
-            !ticketImage.naturalWidth
+            !canvas.width ||
+            !canvas.height
         ) {
 
             alert(
@@ -533,7 +661,6 @@ downloadButton.addEventListener(
         const downloadCanvas =
             document.createElement("canvas");
 
-
         const downloadCtx =
             downloadCanvas.getContext("2d");
 
@@ -547,16 +674,16 @@ downloadButton.addEventListener(
 
 
         const ticketHeight =
-            ticketImage.naturalHeight *
+            canvas.height *
             (
                 ticketWidth /
-                ticketImage.naturalWidth
+                canvas.width
             );
 
 
         const height =
             Math.ceil(
-                900 +
+                700 +
                 ticketHeight
             );
 
@@ -568,7 +695,9 @@ downloadButton.addEventListener(
             height;
 
 
-        /* BACKGROUND */
+        /* =================================================
+           BACKGROUND
+           ================================================= */
 
         downloadCtx.fillStyle =
             "#0b1b2b";
@@ -581,7 +710,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* BORDER */
+        /* =================================================
+           BORDER
+           ================================================= */
 
         downloadCtx.strokeStyle =
             "#c9a227";
@@ -597,7 +728,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* TITLE */
+        /* =================================================
+           TITLE
+           ================================================= */
 
         downloadCtx.fillStyle =
             "#c9a227";
@@ -615,7 +748,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* BOARDING */
+        /* =================================================
+           BOARDING
+           ================================================= */
 
         downloadCtx.fillStyle =
             "#ffffff";
@@ -630,7 +765,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* CHARACTER */
+        /* =================================================
+           CHARACTER
+           ================================================= */
 
         downloadCtx.font =
             "bold 30px Georgia, serif";
@@ -642,10 +779,12 @@ downloadButton.addEventListener(
         );
 
 
-        /* TICKET */
+        /* =================================================
+           COMPLETED TICKET
+           ================================================= */
 
         downloadCtx.drawImage(
-            ticketImage,
+            canvas,
             (width - ticketWidth) / 2,
             235,
             ticketWidth,
@@ -653,7 +792,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* INFORMATION */
+        /* =================================================
+           INFORMATION
+           ================================================= */
 
         const infoStart =
             275 + ticketHeight;
@@ -687,7 +828,9 @@ downloadButton.addEventListener(
         );
 
 
-        /* DOWNLOAD */
+        /* =================================================
+           DOWNLOAD
+           ================================================= */
 
         const link =
             document.createElement("a");
