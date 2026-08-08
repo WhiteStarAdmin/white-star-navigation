@@ -2,64 +2,90 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Passenger Registration | North Star Navigation</title>
 
-    <link rel="stylesheet" href="style.css">
-    
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
     <style>
-    .registration-container {
-        max-width: 600px;
-        margin: 0 auto;
-    }
 
-    #passengerForm {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+        .registration-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    #passengerForm label {
-        display: block;
-        margin-top: 12px;
-        font-weight: bold;
-    }
+        #passengerForm {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    #passengerForm input,
-    #passengerForm select {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #aaa;
-    }
+        #passengerForm label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
 
-    #passengerForm button {
-        margin-top: 20px;
-        align-self: center;
-        padding: 10px 24px;
-        font-size: 16px;
-    }
-    
+        #passengerForm input,
+        #passengerForm select {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+        }
+
+        #passengerForm button {
+            margin-top: 20px;
+            align-self: center;
+            padding: 10px 24px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .registration-note {
+            margin-top: 18px;
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
     <h1>North Star Navigation</h1>
+
     <h2>Passenger Registration</h2>
 
     <hr>
+
 
     <section class="registration-container">
 
         <h3>Passenger Information</h3>
 
+
         <form id="passengerForm">
+
+
+            <!-- USER NAME -->
 
             <label for="userName">
                 Name
@@ -73,6 +99,9 @@
                 autocomplete="name"
             >
 
+
+            <!-- USER ALIAS -->
+
             <label for="userAlias">
                 User Alias
             </label>
@@ -84,6 +113,9 @@
                 required
             >
 
+
+            <!-- CHARACTER -->
+
             <label for="characterName">
                 Character Name
             </label>
@@ -94,6 +126,9 @@
                 name="characterName"
                 required
             >
+
+
+            <!-- AGE -->
 
             <label for="characterAge">
                 Character Age
@@ -108,6 +143,9 @@
                 required
             >
 
+
+            <!-- GENDER -->
+
             <label for="characterGender">
                 Gender
             </label>
@@ -117,12 +155,31 @@
                 name="characterGender"
                 required
             >
-                <option value="">Select</option>
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
-                <option value="Non-binary">Non-binary</option>
-                <option value="Other">Other</option>
+
+                <option value="">
+                    Select
+                </option>
+
+                <option value="Female">
+                    Female
+                </option>
+
+                <option value="Male">
+                    Male
+                </option>
+
+                <option value="Non-binary">
+                    Non-binary
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
             </select>
+
+
+            <!-- NATIONALITY -->
 
             <label for="nationality">
                 Nationality
@@ -134,6 +191,9 @@
                 name="nationality"
                 required
             >
+
+
+            <!-- PHONE -->
 
             <label for="phone">
                 User Phone Number
@@ -147,7 +207,24 @@
                 autocomplete="tel"
             >
 
-            <button type="submit" class="registration-button">
+
+            <!-- NOTE -->
+
+            <div class="registration-note">
+
+                You may add your Character Name at the end
+                of the registration to identify the
+                occupied character.
+
+            </div>
+
+
+            <!-- CONTINUE -->
+
+            <button
+                type="submit"
+                class="registration-button"
+            >
                 CONTINUE
             </button>
 
@@ -155,53 +232,188 @@
 
     </section>
 
+
     <hr>
+
 
     <button
         type="button"
-        onclick="location.href='index.html'"
+        onclick="window.location.href='index.html'"
     >
         ← RETURN TO NAVIGATION
     </button>
 
-    <script>
-        const passengerForm = document.getElementById("passengerForm");
 
-        passengerForm.addEventListener("submit", function(event) {
+<script>
 
-            event.preventDefault();
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-            const passengerData = {
-                userName: document.getElementById("userName").value.trim(),
-                userAlias: document.getElementById("userAlias").value.trim(),
-                characterName: document.getElementById("characterName").value.trim(),
-                characterAge: Number(document.getElementById("characterAge").value),
-                characterGender: document.getElementById("characterGender").value,
-                nationality: document.getElementById("nationality").value.trim(),
-                phone: document.getElementById("phone").value.trim()
-            };
-
-            /*
-             * For now we only prepare the information.
-             *
-             * The next phase will:
-             * 1. Save the registration to Firebase.
-             * 2. Generate the real registration timestamp.
-             * 3. Randomly assign a ticket.
-             * 4. Assign the passenger class through the ticket.
-             * 5. Generate the personalized ticket.
-             */
-
-            localStorage.setItem(
-                "currentPassenger",
-                JSON.stringify(passengerData)
+        const passengerForm =
+            document.getElementById(
+                "passengerForm"
             );
 
-            window.location.href = "ticket.html";
 
-        });
-    </script>
+        passengerForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+
+                /* =========================================
+                   GET VALUES
+                   ========================================= */
+
+                const userName =
+                    document
+                        .getElementById("userName")
+                        .value
+                        .trim();
+
+
+                const userAlias =
+                    document
+                        .getElementById("userAlias")
+                        .value
+                        .trim();
+
+
+                const characterName =
+                    document
+                        .getElementById("characterName")
+                        .value
+                        .trim();
+
+
+                const characterAge =
+                    Number(
+                        document
+                            .getElementById("characterAge")
+                            .value
+                    );
+
+
+                const characterGender =
+                    document
+                        .getElementById("characterGender")
+                        .value;
+
+
+                const nationality =
+                    document
+                        .getElementById("nationality")
+                        .value
+                        .trim();
+
+
+                const phone =
+                    document
+                        .getElementById("phone")
+                        .value
+                        .trim();
+
+
+                /* =========================================
+                   REQUIRED DATA
+                   ========================================= */
+
+                if (
+                    !userName ||
+                    !userAlias ||
+                    !characterName ||
+                    !characterAge ||
+                    !characterGender ||
+                    !nationality ||
+                    !phone
+                ) {
+
+                    alert(
+                        "Please complete all required fields."
+                    );
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   PASSENGER DATA
+                   ========================================= */
+
+                const passengerData = {
+
+                    userName:
+                        userName,
+
+                    userAlias:
+                        userAlias,
+
+                    characterName:
+                        characterName,
+
+                    characterAge:
+                        characterAge,
+
+                    characterGender:
+                        characterGender,
+
+                    nationality:
+                        nationality,
+
+                    phone:
+                        phone
+
+                };
+
+
+                /* =========================================
+                   SAVE REGISTRATION
+                   ========================================= */
+
+                try {
+
+                    localStorage.setItem(
+                        "currentPassenger",
+                        JSON.stringify(
+                            passengerData
+                        )
+                    );
+
+                } catch (error) {
+
+                    alert(
+                        "The registration could not be saved. Please check your browser storage settings."
+                    );
+
+                    console.error(error);
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   GO TO TICKET
+                   ========================================= */
+
+                window.location.assign(
+                    "ticket.html"
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+</script>
+
 
 </body>
 
-  </html>
+    </html>
