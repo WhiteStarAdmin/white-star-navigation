@@ -10,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>Your White Star Ticket</title>
+<title>Your North Star Navigation Ticket</title>
 
 <style>
 
@@ -188,6 +188,27 @@ button {
 
 }
 
+/* LOBBY */
+
+.lobby-link {
+    display: inline-block;
+    padding: 12px 22px;
+    font-size: 16px;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+
+    color: #000;
+    background-color: #efeff4;
+
+    border: 2px solid #aaa;
+    border-radius: 6px;
+}
+
+.lobby-link:hover {
+    background-color: #ddd;
+    }
+    
 </style>
 
 </head>
@@ -258,10 +279,12 @@ DOWNLOAD COMPLETE TICKET
 </button>
 
 
-<button
-    type="button"
-    id="lobbyButton"
+<a
+    href="https://chat.whatsapp.com/IQaoDWWWKtW6ohz2e7MEpU?s=cl&p=a&ilr=1"
+    class="lobby-link"
 >
+    ENTER LOBBY
+</a>
 ENTER LOBBY
 </button>
 
@@ -1234,14 +1257,6 @@ downloadButton.addEventListener(
    LOBBY
    ========================================================= */
 
-lobbyButton.addEventListener(
-    "click",
-    function () {
-        window.location.href =
-            "https://chat.whatsapp.com/IQaoDWWWKtW6ohz2e7MEpU?s=cl&p=a&ilr=1";
-    }
-);
-    
 </script>
 
 </body>
