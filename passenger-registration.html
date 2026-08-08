@@ -82,10 +82,12 @@
         <h3>Passenger Information</h3>
 
 
-        <form id="passengerForm">
+        <form
+            id="passengerForm"
+            action="ticket.html"
+            method="GET"
+        >
 
-
-            <!-- USER NAME -->
 
             <label for="userName">
                 Name
@@ -100,8 +102,6 @@
             >
 
 
-            <!-- USER ALIAS -->
-
             <label for="userAlias">
                 User Alias
             </label>
@@ -114,8 +114,6 @@
             >
 
 
-            <!-- CHARACTER -->
-
             <label for="characterName">
                 Character Name
             </label>
@@ -127,8 +125,6 @@
                 required
             >
 
-
-            <!-- AGE -->
 
             <label for="characterAge">
                 Character Age
@@ -143,8 +139,6 @@
                 required
             >
 
-
-            <!-- GENDER -->
 
             <label for="characterGender">
                 Gender
@@ -179,8 +173,6 @@
             </select>
 
 
-            <!-- NATIONALITY -->
-
             <label for="nationality">
                 Nationality
             </label>
@@ -192,8 +184,6 @@
                 required
             >
 
-
-            <!-- PHONE -->
 
             <label for="phone">
                 User Phone Number
@@ -208,18 +198,23 @@
             >
 
 
-            <!-- NOTE -->
+            <!-- =============================================
+                 AVISO
+                 ============================================= -->
 
             <div class="registration-note">
 
-                You may add your Character Name at the end
-                of the registration to identify the
-                occupied character.
+                <strong>IMPORTANT:</strong>
+
+                Character Name is required to identify
+                the occupied character.
 
             </div>
 
 
-            <!-- CONTINUE -->
+            <!-- =============================================
+                 CONTINUE
+                 ============================================= -->
 
             <button
                 type="submit"
@@ -227,6 +222,7 @@
             >
                 CONTINUE
             </button>
+
 
         </form>
 
@@ -246,169 +242,131 @@
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+/* =========================================================
+   PASSENGER REGISTRATION
+   ========================================================= */
 
-        const passengerForm =
-            document.getElementById(
-                "passengerForm"
+const passengerForm =
+    document.getElementById(
+        "passengerForm"
+    );
+
+
+passengerForm.addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+
+        /* =============================================
+           GET DATA
+           ============================================= */
+
+        const passengerData = {
+
+            userName:
+                document
+                    .getElementById("userName")
+                    .value
+                    .trim(),
+
+            userAlias:
+                document
+                    .getElementById("userAlias")
+                    .value
+                    .trim(),
+
+            characterName:
+                document
+                    .getElementById("characterName")
+                    .value
+                    .trim(),
+
+            characterAge:
+                Number(
+                    document
+                        .getElementById("characterAge")
+                        .value
+                ),
+
+            characterGender:
+                document
+                    .getElementById("characterGender")
+                    .value,
+
+            nationality:
+                document
+                    .getElementById("nationality")
+                    .value
+                    .trim(),
+
+            phone:
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim()
+
+        };
+
+
+        /* =============================================
+           VERIFY REQUIRED INFORMATION
+           ============================================= */
+
+        if (
+            !passengerData.userName ||
+            !passengerData.userAlias ||
+            !passengerData.characterName ||
+            !passengerData.characterAge ||
+            !passengerData.characterGender ||
+            !passengerData.nationality ||
+            !passengerData.phone
+        ) {
+
+            alert(
+                "Please complete all required fields."
             );
 
+            return;
 
-        passengerForm.addEventListener(
-            "submit",
-            function (event) {
-
-                event.preventDefault();
+        }
 
 
-                /* =========================================
-                   GET VALUES
-                   ========================================= */
+        /* =============================================
+           SAVE DATA
+           ============================================= */
 
-                const userName =
-                    document
-                        .getElementById("userName")
-                        .value
-                        .trim();
+        try {
 
+            localStorage.setItem(
+                "currentPassenger",
+                JSON.stringify(
+                    passengerData
+                )
+            );
 
-                const userAlias =
-                    document
-                        .getElementById("userAlias")
-                        .value
-                        .trim();
+        } catch (error) {
 
+            alert(
+                "The registration could not be saved."
+            );
 
-                const characterName =
-                    document
-                        .getElementById("characterName")
-                        .value
-                        .trim();
+            console.error(error);
 
+            return;
 
-                const characterAge =
-                    Number(
-                        document
-                            .getElementById("characterAge")
-                            .value
-                    );
+        }
 
 
-                const characterGender =
-                    document
-                        .getElementById("characterGender")
-                        .value;
+        /* =============================================
+           GO TO TICKET
+           ============================================= */
 
-
-                const nationality =
-                    document
-                        .getElementById("nationality")
-                        .value
-                        .trim();
-
-
-                const phone =
-                    document
-                        .getElementById("phone")
-                        .value
-                        .trim();
-
-
-                /* =========================================
-                   REQUIRED DATA
-                   ========================================= */
-
-                if (
-                    !userName ||
-                    !userAlias ||
-                    !characterName ||
-                    !characterAge ||
-                    !characterGender ||
-                    !nationality ||
-                    !phone
-                ) {
-
-                    alert(
-                        "Please complete all required fields."
-                    );
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   PASSENGER DATA
-                   ========================================= */
-
-                const passengerData = {
-
-                    userName:
-                        userName,
-
-                    userAlias:
-                        userAlias,
-
-                    characterName:
-                        characterName,
-
-                    characterAge:
-                        characterAge,
-
-                    characterGender:
-                        characterGender,
-
-                    nationality:
-                        nationality,
-
-                    phone:
-                        phone
-
-                };
-
-
-                /* =========================================
-                   SAVE REGISTRATION
-                   ========================================= */
-
-                try {
-
-                    localStorage.setItem(
-                        "currentPassenger",
-                        JSON.stringify(
-                            passengerData
-                        )
-                    );
-
-                } catch (error) {
-
-                    alert(
-                        "The registration could not be saved. Please check your browser storage settings."
-                    );
-
-                    console.error(error);
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   GO TO TICKET
-                   ========================================= */
-
-                window.location.assign(
-                    "ticket.html"
-                );
-
-            }
-
-        );
+        window.location.href =
+            "ticket.html";
 
     }
-
 );
 
 </script>
@@ -416,4 +374,4 @@ document.addEventListener(
 
 </body>
 
-    </html>
+</html>
