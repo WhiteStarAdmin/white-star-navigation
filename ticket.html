@@ -58,705 +58,719 @@
 
 <body>
 
-    <main class="ticket-page">
+<main class="ticket-page">
 
-        <h1>North Star Navigation</h1>
-        <h2>Your Passenger Ticket</h2>
+    <h1>North Star Navigation</h1>
 
-        <hr>
+    <h2>Your Passenger Ticket</h2>
 
-        <p id="loadingMessage" class="ticket-loading">
-            Generating your ticket...
-        </p>
+    <hr>
 
-        <div class="ticket-wrapper">
-            <canvas id="ticketCanvas"></canvas>
-        </div>
+    <p id="loadingMessage" class="ticket-loading">
+        Generating your ticket...
+    </p>
 
-        <div id="ticketInfo" class="ticket-info"></div>
+    <div class="ticket-wrapper">
+        <canvas id="ticketCanvas"></canvas>
+    </div>
 
-        <div class="ticket-actions">
+    <div id="ticketInfo" class="ticket-info"></div>
 
-            <button type="button" id="downloadButton">
-                DOWNLOAD TICKET
-            </button>
+    <div class="ticket-actions">
 
-            <button type="button" id="lobbyButton">
-                ENTER LOBBY
-            </button>
-
-        </div>
-
-        <button
-            type="button"
-            onclick="location.href='index.html'">
-            ← RETURN TO NAVIGATION
+        <button type="button" id="downloadButton">
+            DOWNLOAD TICKET
         </button>
 
-    </main>
+        <button type="button" id="lobbyButton">
+            ENTER LOBBY
+        </button>
+
+    </div>
+
+    <button
+        type="button"
+        onclick="location.href='index.html'">
+        ← RETURN TO NAVIGATION
+    </button>
+
+</main>
 
 
-    <script>
+<script>
 
-        /* =====================================================
-           WHITE STAR NAVIGATION
-           TICKET GENERATOR
-           ===================================================== */
+/* =========================================================
+   CANVAS
+   ========================================================= */
 
-        const canvas =
-            document.getElementById("ticketCanvas");
+const canvas =
+    document.getElementById("ticketCanvas");
 
-        const ctx =
-            canvas.getContext("2d");
+const ctx =
+    canvas.getContext("2d");
 
-        const loadingMessage =
-            document.getElementById("loadingMessage");
+const loadingMessage =
+    document.getElementById("loadingMessage");
 
-        const ticketInfo =
-            document.getElementById("ticketInfo");
+const ticketInfo =
+    document.getElementById("ticketInfo");
 
-        const downloadButton =
-            document.getElementById("downloadButton");
+const downloadButton =
+    document.getElementById("downloadButton");
 
-        const lobbyButton =
-            document.getElementById("lobbyButton");
-
-
-        /* =====================================================
-           GET PASSENGER
-           ===================================================== */
-
-        const savedPassenger =
-            localStorage.getItem("currentPassenger");
+const lobbyButton =
+    document.getElementById("lobbyButton");
 
 
-        if (!savedPassenger) {
+/* =========================================================
+   PASSENGER
+   ========================================================= */
 
-            loadingMessage.textContent =
-                "No registration was found.";
+const savedPassenger =
+    localStorage.getItem("currentPassenger");
 
-            downloadButton.style.display = "none";
-            lobbyButton.style.display = "none";
 
-            throw new Error(
-                "No passenger registration found."
-            );
+if (!savedPassenger) {
+
+    loadingMessage.textContent =
+        "No registration was found.";
+
+    downloadButton.style.display = "none";
+    lobbyButton.style.display = "none";
+
+    throw new Error(
+        "No passenger registration found."
+    );
+}
+
+
+const passengerData =
+    JSON.parse(savedPassenger);
+
+
+/* =========================================================
+   CLASS
+   ========================================================= */
+
+function drawClass() {
+
+    const random =
+        Math.random() * 100;
+
+    if (random < 15) {
+        return "first";
+    }
+
+    if (random < 50) {
+        return "second";
+    }
+
+    return "third";
+}
+
+
+/* =========================================================
+   TICKET TEMPLATES
+   ========================================================= */
+
+const ticketTemplates = {
+
+    first: [
+
+        {
+            letter: "A",
+            image: "assets/tickets/ticket_first_a.png",
+            prefix: "AF"
+        },
+
+        {
+            letter: "B",
+            image: "assets/tickets/ticket_first_b.png",
+            prefix: "BF"
+        },
+
+        {
+            letter: "C",
+            image: "assets/tickets/ticket_first_c.png",
+            prefix: "CF"
         }
 
+    ],
 
-        const passengerData =
-            JSON.parse(savedPassenger);
+    second: [
 
+        {
+            letter: "D",
+            image: "assets/tickets/ticket_second_d.png",
+            prefix: "DS"
+        },
 
-        /* =====================================================
-           CLASS DISTRIBUTION
-           ===================================================== */
+        {
+            letter: "E",
+            image: "assets/tickets/ticket_second_e.png",
+            prefix: "ES"
+        },
 
-        function drawClass() {
-
-            const random =
-                Math.random() * 100;
-
-            if (random < 15) {
-                return "first";
-            }
-
-            if (random < 50) {
-                return "second";
-            }
-
-            return "third";
+        {
+            letter: "F",
+            image: "assets/tickets/ticket_second_f.png",
+            prefix: "FS"
         }
 
+    ],
 
-        /* =====================================================
-           TICKET TEMPLATES
-           ===================================================== */
+    third: [
 
-        const ticketTemplates = {
+        {
+            letter: "G",
+            image: "assets/tickets/ticket_third_g.png",
+            prefix: "GT"
+        },
 
-            first: [
+        {
+            letter: "H",
+            image: "assets/tickets/ticket_third_h.png",
+            prefix: "HT"
+        },
 
-                {
-                    letter: "A",
-                    image:
-                        "assets/tickets/ticket_first_a.png",
-                    prefix: "AF"
-                },
+        {
+            letter: "I",
+            image: "assets/tickets/ticket_third_i.png",
+            prefix: "IT"
+        }
 
-                {
-                    letter: "B",
-                    image:
-                        "assets/tickets/ticket_first_b.png",
-                    prefix: "BF"
-                },
+    ]
 
-                {
-                    letter: "C",
-                    image:
-                        "assets/tickets/ticket_first_c.png",
-                    prefix: "CF"
-                }
+};
 
-            ],
 
-            second: [
+/* =========================================================
+   ROOM RANGES
+   ========================================================= */
 
-                {
-                    letter: "D",
-                    image:
-                        "assets/tickets/ticket_second_d.png",
-                    prefix: "DS"
-                },
+const roomRanges = {
 
-                {
-                    letter: "E",
-                    image:
-                        "assets/tickets/ticket_second_e.png",
-                    prefix: "ES"
-                },
+    first: {
+        min: 1,
+        max: 15
+    },
 
-                {
-                    letter: "F",
-                    image:
-                        "assets/tickets/ticket_second_f.png",
-                    prefix: "FS"
-                }
+    second: {
+        min: 16,
+        max: 50
+    },
 
-            ],
+    third: {
+        min: 51,
+        max: 100
+    }
 
-            third: [
+};
 
-                {
-                    letter: "G",
-                    image:
-                        "assets/tickets/ticket_third_g.png",
-                    prefix: "GT"
-                },
 
-                {
-                    letter: "H",
-                    image:
-                        "assets/tickets/ticket_third_h.png",
-                    prefix: "HT"
-                },
+/* =========================================================
+   ROOM
+   ========================================================= */
 
-                {
-                    letter: "I",
-                    image:
-                        "assets/tickets/ticket_third_i.png",
-                    prefix: "IT"
-                }
+function getUsedRooms() {
 
-            ]
+    const stored =
+        localStorage.getItem("usedRooms");
+
+    if (!stored) {
+        return [];
+    }
+
+    return JSON.parse(stored);
+}
+
+
+function saveUsedRooms(rooms) {
+
+    localStorage.setItem(
+        "usedRooms",
+        JSON.stringify(rooms)
+    );
+}
+
+
+function getAvailableRoom(className) {
+
+    const range =
+        roomRanges[className];
+
+    const usedRooms =
+        getUsedRooms();
+
+    const available = [];
+
+
+    for (
+        let number = range.min;
+        number <= range.max;
+        number++
+    ) {
+
+        if (!usedRooms.includes(number)) {
+            available.push(number);
+        }
+
+    }
+
+
+    if (available.length === 0) {
+        return null;
+    }
+
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            available.length
+        );
+
+
+    const room =
+        available[randomIndex];
+
+
+    usedRooms.push(room);
+
+    saveUsedRooms(usedRooms);
+
+    return room;
+}
+
+
+/* =========================================================
+   FORMAT ROOM
+   ========================================================= */
+
+function formatRoomNumber(number) {
+
+    return String(number)
+        .padStart(3, "0");
+
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+const now =
+    new Date();
+
+const day =
+    String(now.getDate())
+        .padStart(2, "0");
+
+const month =
+    String(now.getMonth() + 1)
+        .padStart(2, "0");
+
+const year =
+    now.getFullYear();
+
+const hours =
+    String(now.getHours())
+        .padStart(2, "0");
+
+const minutes =
+    String(now.getMinutes())
+        .padStart(2, "0");
+
+
+const registrationDate =
+    `${day}/${month}/${year}`;
+
+const registrationTime =
+    `${hours}:${minutes}`;
+
+
+/* =========================================================
+   GENERATE CLASS
+   ========================================================= */
+
+const className =
+    drawClass();
+
+
+/* =========================================================
+   GENERATE ROOM
+   ========================================================= */
+
+const roomNumber =
+    getAvailableRoom(className);
+
+
+if (roomNumber === null) {
+
+    loadingMessage.textContent =
+        "There are no available places in this class.";
+
+    downloadButton.style.display = "none";
+    lobbyButton.style.display = "none";
+
+    throw new Error(
+        "No available room in selected class."
+    );
+}
+
+
+const formattedRoom =
+    formatRoomNumber(roomNumber);
+
+
+/* =========================================================
+   SELECT TEMPLATE
+   ========================================================= */
+
+const templates =
+    ticketTemplates[className];
+
+
+const selectedTemplate =
+    templates[
+        Math.floor(
+            Math.random() *
+            templates.length
+        )
+    ];
+
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+/*
+   IMPORTANTE:
+   Cada dato tiene su propia variable.
+   No se mezclan entre sí.
+*/
+
+const passenger =
+    passengerData.characterName ||
+    "PASAJERO";
+
+
+/*
+   Como passenger.html todavía no pregunta
+   categoría, usamos PASAJERO.
+*/
+
+const category =
+    "PASAJERO";
+
+
+const destination =
+    passengerData.destination ||
+    "REMOTO";
+
+
+const cabin =
+    `${selectedTemplate.letter}-${formattedRoom}`;
+
+
+const code =
+    `${selectedTemplate.prefix}-${day}${month}${formattedRoom}`;
+
+
+/* =========================================================
+   LOAD IMAGE
+   ========================================================= */
+
+const ticketImage =
+    new Image();
+
+
+ticketImage.onload =
+    function () {
+
+        /*
+         * Tamaño REAL del PNG
+         */
+
+        canvas.width =
+            ticketImage.naturalWidth;
+
+        canvas.height =
+            ticketImage.naturalHeight;
+
+
+        /*
+         * Limpiar completamente el canvas
+         */
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        /*
+         * Dibujar boleto original
+         */
+
+        ctx.drawImage(
+            ticketImage,
+            0,
+            0
+        );
+
+
+        /* =================================================
+           TEXTO
+           ================================================= */
+
+        ctx.fillStyle =
+            "#171717";
+
+        ctx.textBaseline =
+            "middle";
+
+        ctx.font =
+            "bold 26px Georgia, serif";
+
+
+        /* =================================================
+           PASAJERO
+           ================================================= */
+
+        ctx.fillText(
+            passenger,
+            355,
+            219
+        );
+
+
+        /* =================================================
+           CATEGORÍA
+           ================================================= */
+
+        ctx.fillText(
+            category,
+            355,
+            275
+        );
+
+
+        /* =================================================
+           CAMAROTE
+           ================================================= */
+
+        ctx.fillText(
+            cabin,
+            555,
+            330
+        );
+
+
+        /* =================================================
+           DESTINO
+           ================================================= */
+
+        ctx.fillText(
+            destination,
+            525,
+            386
+        );
+
+
+        /* =================================================
+           FECHA
+           PANEL DERECHO
+           ================================================= */
+
+        ctx.font =
+            "bold 24px Georgia, serif";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.fillText(
+            registrationDate,
+            1300,
+            320
+        );
+
+
+        /* =================================================
+           CÓDIGO
+           PANEL DERECHO
+           ================================================= */
+
+        ctx.fillText(
+            code,
+            1300,
+            418
+        );
+
+
+        /*
+         * Regresar alineación normal
+         */
+
+        ctx.textAlign =
+            "left";
+
+
+        /* =================================================
+           SAVE DATA
+           ================================================= */
+
+        const generatedTicket = {
+
+            class:
+                className,
+
+            template:
+                selectedTemplate.letter,
+
+            passenger:
+                passenger,
+
+            category:
+                category,
+
+            cabin:
+                cabin,
+
+            roomNumber:
+                roomNumber,
+
+            destination:
+                destination,
+
+            date:
+                registrationDate,
+
+            time:
+                registrationTime,
+
+            code:
+                code
 
         };
 
 
-        /* =====================================================
-           ROOM RANGES
-           ===================================================== */
-
-        const roomRanges = {
-
-            first: {
-                min: 1,
-                max: 15
-            },
-
-            second: {
-                min: 16,
-                max: 50
-            },
-
-            third: {
-                min: 51,
-                max: 100
-            }
-
-        };
-
-
-        /* =====================================================
-           ROOM
-           ===================================================== */
-
-        function getUsedRooms() {
-
-            const stored =
-                localStorage.getItem("usedRooms");
-
-            if (!stored) {
-                return [];
-            }
-
-            return JSON.parse(stored);
-        }
-
-
-        function saveUsedRooms(rooms) {
-
-            localStorage.setItem(
-                "usedRooms",
-                JSON.stringify(rooms)
-            );
-        }
-
-
-        function getAvailableRoom(className) {
-
-            const range =
-                roomRanges[className];
-
-            const usedRooms =
-                getUsedRooms();
-
-            const available = [];
-
-
-            for (
-                let number = range.min;
-                number <= range.max;
-                number++
-            ) {
-
-                if (!usedRooms.includes(number)) {
-
-                    available.push(number);
-
-                }
-
-            }
-
-
-            if (available.length === 0) {
-                return null;
-            }
-
-
-            const randomIndex =
-                Math.floor(
-                    Math.random() *
-                    available.length
-                );
-
-
-            const room =
-                available[randomIndex];
-
-
-            usedRooms.push(room);
-
-            saveUsedRooms(usedRooms);
-
-            return room;
-        }
-
-
-        /* =====================================================
-           FORMAT ROOM
-           ===================================================== */
-
-        function formatRoomNumber(number) {
-
-            return String(number)
-                .padStart(3, "0");
-
-        }
-
-
-        /* =====================================================
-           DATE AND TIME
-           ===================================================== */
-
-        const now =
-            new Date();
-
-
-        const day =
-            String(
-                now.getDate()
-            ).padStart(2, "0");
-
-
-        const month =
-            String(
-                now.getMonth() + 1
-            ).padStart(2, "0");
-
-
-        const year =
-            now.getFullYear();
-
-
-        const hours =
-            String(
-                now.getHours()
-            ).padStart(2, "0");
-
-
-        const minutes =
-            String(
-                now.getMinutes()
-            ).padStart(2, "0");
-
-
-        const registrationDate =
-            `${day}/${month}/${year}`;
-
-
-        const registrationTime =
-            `${hours}:${minutes}`;
-
-
-        /* =====================================================
-           GENERATE CLASS
-           ===================================================== */
-
-        const className =
-            drawClass();
-
-
-        /* =====================================================
-           GET ROOM
-           ===================================================== */
-
-        const roomNumber =
-            getAvailableRoom(className);
-
-
-        if (roomNumber === null) {
-
-            loadingMessage.textContent =
-                "There are no available places in this class.";
-
-            downloadButton.style.display = "none";
-            lobbyButton.style.display = "none";
-
-            throw new Error(
-                "No available room in selected class."
-            );
-        }
-
-
-        const formattedRoom =
-            formatRoomNumber(roomNumber);
-
-
-        /* =====================================================
-           SELECT TEMPLATE
-           ===================================================== */
-
-        const templates =
-            ticketTemplates[className];
-
-
-        const selectedTemplate =
-            templates[
-                Math.floor(
-                    Math.random() *
-                    templates.length
-                )
-            ];
-
-
-        /* =====================================================
-           PASSENGER DATA
-           ===================================================== */
-
-        const passenger =
-            passengerData.characterName || "PASAJERO";
-
-
-        const category =
-            passengerData.category || "PASAJERO";
-
-
-        const destination =
-            passengerData.destination || "REMOTO";
-
-
-        const cabin =
-            `${selectedTemplate.letter}-${formattedRoom}`;
-
-
-        const code =
-            `${selectedTemplate.prefix}-${day}${month}${formattedRoom}`;
-
-
-        /* =====================================================
-           LOAD TICKET IMAGE
-           ===================================================== */
-
-        const ticketImage =
-            new Image();
-
-
-        ticketImage.onload =
-            function () {
-
-                canvas.width =
-                    ticketImage.naturalWidth;
-
-                canvas.height =
-                    ticketImage.naturalHeight;
-
-
-                /* ---------------------------------------------
-                   ORIGINAL TICKET
-                   --------------------------------------------- */
-
-                ctx.drawImage(
-                    ticketImage,
-                    0,
-                    0
-                );
-
-
-                /* =================================================
-                   TEXT CONFIGURATION
-                   ================================================= */
-
-                ctx.fillStyle =
-                    "#171717";
-
-                ctx.textBaseline =
-                    "middle";
-
-                ctx.font =
-                    "bold 27px Georgia, serif";
-
-
-                /* =================================================
-                   PASSENGER
-
-                   IMPORTANTE:
-                   El nombre empieza después de "PASAJERO:"
-                   ================================================= */
-
-                ctx.fillText(
-                    passenger,
-                    365,
-                    219
-                );
-
-
-                /* =================================================
-                   CATEGORY
-                   ================================================= */
-
-                ctx.fillText(
-                    category,
-                    365,
-                    274
-                );
-
-
-                /* =================================================
-                   CABIN
-                   ================================================= */
-
-                ctx.fillText(
-                    cabin,
-                    555,
-                    330
-                );
-
-
-                /* =================================================
-                   DESTINATION
-                   ================================================= */
-
-                ctx.fillText(
-                    destination,
-                    525,
-                    386
-                );
-
-
-                /* =================================================
-                   DATE — PARTE DERECHA
-                   ================================================= */
-
-                ctx.font =
-                    "bold 24px Georgia, serif";
-
-
-                ctx.fillText(
-                    registrationDate,
-                    1170,
-                    288
-                );
-
-
-                /* =================================================
-                   CODE — PARTE DERECHA
-                   ================================================= */
-
-                ctx.fillText(
-                    code,
-                    1200,
-                    382
-                );
-
-
-                /* =================================================
-                   SAVE GENERATED DATA
-                   ================================================= */
-
-                const generatedTicket = {
-
-                    class:
-                        className,
-
-                    template:
-                        selectedTemplate.letter,
-
-                    passenger:
-                        passenger,
-
-                    category:
-                        category,
-
-                    cabin:
-                        cabin,
-
-                    roomNumber:
-                        roomNumber,
-
-                    destination:
-                        destination,
-
-                    date:
-                        registrationDate,
-
-                    time:
-                        registrationTime,
-
-                    code:
-                        code
-
-                };
-
-
-                localStorage.setItem(
-                    "generatedTicket",
-                    JSON.stringify(
-                        generatedTicket
-                    )
-                );
-
-
-                /* =================================================
-                   INFORMATION BELOW TICKET
-                   ================================================= */
-
-                loadingMessage.style.display =
-                    "none";
-
-
-                ticketInfo.innerHTML = `
-
-                    <strong>
-                        Ticket generated successfully.
-                    </strong>
-
-                    <br>
-
-                    Class:
-                    ${className.toUpperCase()}
-
-                    <br>
-
-                    Cabin:
-                    ${cabin}
-
-                    <br>
-
-                    Date:
-                    ${registrationDate}
-
-                    <br>
-
-                    Time:
-                    ${registrationTime}
-
-                    <br>
-
-                    Code:
-                    ${code}
-
-                `;
-
-            };
-
-
-        /* =====================================================
-           IMAGE ERROR
-           ===================================================== */
-
-        ticketImage.onerror =
-            function () {
-
-                loadingMessage.textContent =
-                    "The ticket image could not be loaded.";
-
-                downloadButton.style.display =
-                    "none";
-
-                lobbyButton.style.display =
-                    "none";
-
-            };
-
-
-        ticketImage.src =
-            selectedTemplate.image;
-
-
-        /* =====================================================
-           DOWNLOAD PNG
-           ===================================================== */
-
-        downloadButton.addEventListener(
-            "click",
-            function () {
-
-                const link =
-                    document.createElement("a");
-
-
-                link.download =
-                    `White-Star-Ticket-${code}.png`;
-
-
-                link.href =
-                    canvas.toDataURL(
-                        "image/png"
-                    );
-
-
-                link.click();
-
-            }
+        localStorage.setItem(
+            "generatedTicket",
+            JSON.stringify(
+                generatedTicket
+            )
         );
 
 
-        /* =====================================================
-           LOBBY
-           ===================================================== */
+        /* =================================================
+           INFORMATION
+           ================================================= */
 
-        lobbyButton.addEventListener(
-            "click",
-            function () {
+        loadingMessage.style.display =
+            "none";
 
-                window.location.href =
-                    "index.html";
 
-            }
-        );
+        ticketInfo.innerHTML = `
 
-    </script>
+            <strong>
+                Ticket generated successfully.
+            </strong>
+
+            <br>
+
+            Class:
+            ${className.toUpperCase()}
+
+            <br>
+
+            Cabin:
+            ${cabin}
+
+            <br>
+
+            Date:
+            ${registrationDate}
+
+            <br>
+
+            Time:
+            ${registrationTime}
+
+            <br>
+
+            Code:
+            ${code}
+
+        `;
+
+    };
+
+
+/* =========================================================
+   IMAGE ERROR
+   ========================================================= */
+
+ticketImage.onerror =
+    function () {
+
+        loadingMessage.textContent =
+            "The ticket image could not be loaded.";
+
+        downloadButton.style.display =
+            "none";
+
+        lobbyButton.style.display =
+            "none";
+
+    };
+
+
+ticketImage.src =
+    selectedTemplate.image;
+
+
+/* =========================================================
+   DOWNLOAD PNG
+   ========================================================= */
+
+downloadButton.addEventListener(
+    "click",
+    function () {
+
+        const link =
+            document.createElement("a");
+
+        link.download =
+            `White-Star-Ticket-${code}.png`;
+
+        link.href =
+            canvas.toDataURL(
+                "image/png"
+            );
+
+        link.click();
+
+    }
+);
+
+
+/* =========================================================
+   LOBBY
+   ========================================================= */
+
+lobbyButton.addEventListener(
+    "click",
+    function () {
+
+        window.location.href =
+            "index.html";
+
+    }
+);
+
+</script>
 
 </body>
-    </html>
+</html>
