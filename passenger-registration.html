@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Passenger Registration | North Star Navigation</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>North Star Navigation</h1>
+    <h2>Passenger Registration</h2>
+
+    <hr>
+
+    <section class="registration-container">
+
+        <h3>Passenger Information</h3>
+
+        <form id="passengerForm">
+
+            <label for="userName">
+                Name
+            </label>
+
+            <input
+                type="text"
+                id="userName"
+                name="userName"
+                required
+                autocomplete="name"
+            >
+
+            <label for="userAlias">
+                User Alias
+            </label>
+
+            <input
+                type="text"
+                id="userAlias"
+                name="userAlias"
+                required
+            >
+
+            <label for="characterName">
+                Character Name
+            </label>
+
+            <input
+                type="text"
+                id="characterName"
+                name="characterName"
+                required
+            >
+
+            <label for="characterAge">
+                Character Age
+            </label>
+
+            <input
+                type="number"
+                id="characterAge"
+                name="characterAge"
+                min="1"
+                max="120"
+                required
+            >
+
+            <label for="characterGender">
+                Gender
+            </label>
+
+            <select
+                id="characterGender"
+                name="characterGender"
+                required
+            >
+                <option value="">Select</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="nationality">
+                Nationality
+            </label>
+
+            <input
+                type="text"
+                id="nationality"
+                name="nationality"
+                required
+            >
+
+            <label for="phone">
+                User Phone Number
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required
+                autocomplete="tel"
+            >
+
+            <button type="submit" class="registration-button">
+                CONTINUE
+            </button>
+
+        </form>
+
+    </section>
+
+    <hr>
+
+    <button
+        type="button"
+        onclick="location.href='index.html'"
+    >
+        ← RETURN TO NAVIGATION
+    </button>
+
+    <script>
+        const passengerForm = document.getElementById("passengerForm");
+
+        passengerForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const passengerData = {
+                userName: document.getElementById("userName").value.trim(),
+                userAlias: document.getElementById("userAlias").value.trim(),
+                characterName: document.getElementById("characterName").value.trim(),
+                characterAge: Number(document.getElementById("characterAge").value),
+                characterGender: document.getElementById("characterGender").value,
+                nationality: document.getElementById("nationality").value.trim(),
+                phone: document.getElementById("phone").value.trim()
+            };
+
+            /*
+             * For now we only prepare the information.
+             *
+             * The next phase will:
+             * 1. Save the registration to Firebase.
+             * 2. Generate the real registration timestamp.
+             * 3. Randomly assign a ticket.
+             * 4. Assign the passenger class through the ticket.
+             * 5. Generate the personalized ticket.
+             */
+
+            localStorage.setItem(
+                "currentPassenger",
+                JSON.stringify(passengerData)
+            );
+
+            window.location.href = "ticket.html";
+
+        });
+    </script>
+
+</body>
+
+  </html>
