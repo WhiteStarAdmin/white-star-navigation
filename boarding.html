@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Boarding Pass | North Star Navigation</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            background: #0b1b2b;
+            color: #ffffff;
+            font-family: Georgia, serif;
+        }
+
+        .boarding-page {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #c9a227;
+            font-size: 48px;
+            margin: 20px 0 5px;
+        }
+
+        h2 {
+            font-size: 30px;
+            margin: 0 0 25px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #777;
+            margin: 25px 0;
+        }
+
+        .boarding-box {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            border: 2px solid #c9a227;
+            border-radius: 12px;
+            background: #101f30;
+        }
+
+        .boarding-title {
+            font-size: 30px;
+            margin: 0 0 25px;
+            color: #c9a227;
+        }
+
+        .character-name {
+            font-size: 25px;
+            margin-bottom: 25px;
+        }
+
+        .ticket-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin: 20px auto;
+        }
+
+        #ticketCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .ticket-details {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #777;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        .ticket-details strong {
+            color: #c9a227;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 17px;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid #888;
+        }
+
+        .error {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 40px 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<main class="boarding-page">
+
+    <h1>North Star Navigation</h1>
+
+    <h2>Boarding Pass</h2>
+
+    <hr>
+
+
+    <div
+        id="loading"
+        class="boarding-box"
+    >
+
+        Generating boarding pass...
+
+    </div>
+
+
+    <div
+        id="boardingContent"
+        class="boarding-box"
+        style="display:none;"
+    >
+
+        <div class="boarding-title">
+            PASSENGER BOARDING
+        </div>
+
+
+        <div
+            id="characterName"
+            class="character-name"
+        ></div>
+
+
+        <div class="ticket-wrapper">
+
+            <canvas id="ticketCanvas"></canvas>
+
+        </div>
+
+
+        <div
+            id="ticketDetails"
+            class="ticket-details"
+        ></div>
+
+
+        <div class="actions">
+
+            <button
+                type="button"
+                id="downloadButton"
+            >
+                DOWNLOAD BOARDING PASS
+            </button>
+
+            <button
+                type="button"
+                onclick="window.location.href='index.html'"
+            >
+                ENTER LOBBY
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        onclick="window.location.href='index.html'"
+    >
+        ← RETURN TO NAVIGATION
+    </button>
+
+
+</main>
+
+
+<script>
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const loading =
+    document.getElementById("loading");
+
+const boardingContent =
+    document.getElementById("boardingContent");
+
+const characterNameElement =
+    document.getElementById("characterName");
+
+const ticketDetails =
+    document.getElementById("ticketDetails");
+
+const canvas =
+    document.getElementById("ticketCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
+
+/* =========================================================
+   GET GENERATED TICKET
+   ========================================================= */
+
+const savedTicket =
+    localStorage.getItem("generatedTicket");
+
+
+const savedPassenger =
+    localStorage.getItem("currentPassenger");
+
+
+if (!savedTicket) {
+
+    loading.textContent =
+        "No boarding information was found.";
+
+    throw new Error(
+        "generatedTicket was not found."
+    );
+
+}
+
+
+let ticketData;
+
+
+try {
+
+    ticketData =
+        JSON.parse(savedTicket);
+
+} catch (error) {
+
+    loading.textContent =
+        "The boarding information is invalid.";
+
+    throw error;
+
+}
+
+
+/* =========================================================
+   CHARACTER
+   ========================================================= */
+
+let passenger =
+    ticketData.passenger || "";
+
+
+if (
+    !passenger &&
+    savedPassenger
+) {
+
+    try {
+
+        const passengerData =
+            JSON.parse(savedPassenger);
+
+        passenger =
+            passengerData.characterName || "";
+
+    } catch {
+
+        passenger = "";
+
+    }
+
+}
+
+
+if (!passenger) {
+
+    passenger =
+        "PASSENGER";
+
+}
+
+
+characterNameElement.textContent =
+    "Character: " + passenger;
+
+
+/* =========================================================
+   TICKET INFORMATION
+   ========================================================= */
+
+const className =
+    String(
+        ticketData.class || ""
+    ).toUpperCase();
+
+
+const cabin =
+    ticketData.cabin || "—";
+
+
+const date =
+    ticketData.date || "—";
+
+
+const time =
+    ticketData.time || "—";
+
+
+const code =
+    ticketData.code || "—";
+
+
+ticketDetails.innerHTML = `
+
+    <strong>Class:</strong>
+    ${escapeHTML(className)}
+
+    <br>
+
+    <strong>Cabin:</strong>
+    ${escapeHTML(cabin)}
+
+    <br>
+
+    <strong>Date:</strong>
+    ${escapeHTML(date)}
+
+    <br>
+
+    <strong>Time:</strong>
+    ${escapeHTML(time)}
+
+    <br>
+
+    <strong>Code:</strong>
+    ${escapeHTML(code)}
+
+`;
+
+
+/* =========================================================
+   SELECT CORRECT TICKET IMAGE
+   ========================================================= */
+
+const template =
+    String(
+        ticketData.template || ""
+    ).toUpperCase();
+
+
+const imageMap = {
+
+    A:
+        "assets/tickets/ticket_first_a.png",
+
+    B:
+        "assets/tickets/ticket_first_b.png",
+
+    C:
+        "assets/tickets/ticket_first_c.png",
+
+    D:
+        "assets/tickets/ticket_second_d.png",
+
+    E:
+        "assets/tickets/ticket_second_e.png",
+
+    F:
+        "assets/tickets/ticket_second_f.png",
+
+    G:
+        "assets/tickets/ticket_third_g.png",
+
+    H:
+        "assets/tickets/ticket_third_h.png",
+
+    I:
+        "assets/tickets/ticket_third_i.png"
+
+};
+
+
+const imagePath =
+    imageMap[template];
+
+
+if (!imagePath) {
+
+    loading.textContent =
+        "The ticket template could not be identified.";
+
+    throw new Error(
+        "Invalid ticket template."
+    );
+
+}
+
+
+/* =========================================================
+   LOAD IMAGE
+   ========================================================= */
+
+const ticketImage =
+    new Image();
+
+
+ticketImage.onload =
+    function () {
+
+
+        canvas.width =
+            ticketImage.naturalWidth;
+
+        canvas.height =
+            ticketImage.naturalHeight;
+
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        ctx.drawImage(
+            ticketImage,
+            0,
+            0
+        );
+
+
+        loading.style.display =
+            "none";
+
+
+        boardingContent.style.display =
+            "block";
+
+    };
+
+
+ticketImage.onerror =
+    function () {
+
+        loading.textContent =
+            "The boarding ticket image could not be loaded.";
+
+        loading.classList.add("error");
+
+    };
+
+
+ticketImage.src =
+    imagePath;
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   DOWNLOAD COMPLETE BOARDING PASS
+   ========================================================= */
+
+downloadButton.addEventListener(
+    "click",
+    function () {
+
+
+        if (
+            !ticketImage.complete ||
+            !ticketImage.naturalWidth
+        ) {
+
+            alert(
+                "Please wait until the boarding pass has loaded."
+            );
+
+            return;
+
+        }
+
+
+        const downloadCanvas =
+            document.createElement("canvas");
+
+
+        const downloadCtx =
+            downloadCanvas.getContext("2d");
+
+
+        const width =
+            1600;
+
+
+        const ticketWidth =
+            1350;
+
+
+        const ticketHeight =
+            ticketImage.naturalHeight *
+            (
+                ticketWidth /
+                ticketImage.naturalWidth
+            );
+
+
+        const height =
+            Math.ceil(
+                900 +
+                ticketHeight
+            );
+
+
+        downloadCanvas.width =
+            width;
+
+        downloadCanvas.height =
+            height;
+
+
+        /* BACKGROUND */
+
+        downloadCtx.fillStyle =
+            "#0b1b2b";
+
+        downloadCtx.fillRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        /* BORDER */
+
+        downloadCtx.strokeStyle =
+            "#c9a227";
+
+        downloadCtx.lineWidth =
+            5;
+
+        downloadCtx.strokeRect(
+            25,
+            25,
+            width - 50,
+            height - 50
+        );
+
+
+        /* TITLE */
+
+        downloadCtx.fillStyle =
+            "#c9a227";
+
+        downloadCtx.textAlign =
+            "center";
+
+        downloadCtx.font =
+            "bold 50px Georgia, serif";
+
+        downloadCtx.fillText(
+            "NORTH STAR NAVIGATION",
+            width / 2,
+            90
+        );
+
+
+        /* BOARDING */
+
+        downloadCtx.fillStyle =
+            "#ffffff";
+
+        downloadCtx.font =
+            "bold 34px Georgia, serif";
+
+        downloadCtx.fillText(
+            "PASSENGER BOARDING",
+            width / 2,
+            145
+        );
+
+
+        /* CHARACTER */
+
+        downloadCtx.font =
+            "bold 30px Georgia, serif";
+
+        downloadCtx.fillText(
+            "Character: " + passenger,
+            width / 2,
+            200
+        );
+
+
+        /* TICKET */
+
+        downloadCtx.drawImage(
+            ticketImage,
+            (width - ticketWidth) / 2,
+            235,
+            ticketWidth,
+            ticketHeight
+        );
+
+
+        /* INFORMATION */
+
+        const infoStart =
+            275 + ticketHeight;
+
+
+        downloadCtx.fillStyle =
+            "#ffffff";
+
+        downloadCtx.font =
+            "24px Georgia, serif";
+
+
+        downloadCtx.fillText(
+            `Class: ${className}   |   Cabin: ${cabin}`,
+            width / 2,
+            infoStart
+        );
+
+
+        downloadCtx.fillText(
+            `Date: ${date}   |   Time: ${time}`,
+            width / 2,
+            infoStart + 40
+        );
+
+
+        downloadCtx.fillText(
+            `Code: ${code}`,
+            width / 2,
+            infoStart + 80
+        );
+
+
+        /* DOWNLOAD */
+
+        const link =
+            document.createElement("a");
+
+
+        link.download =
+            `North-Star-Boarding-${code}.png`;
+
+
+        link.href =
+            downloadCanvas.toDataURL(
+                "image/png"
+            );
+
+
+        link.click();
+
+    }
+
+);
+
+</script>
+
+
+</body>
+
+</html>
