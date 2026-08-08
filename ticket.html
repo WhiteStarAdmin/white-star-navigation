@@ -2,63 +2,31 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Your White Star Ticket</title>
 
     <link rel="stylesheet" href="style.css">
 
-    <style>
-        .ticket-page {
-            max-width: 1100px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .ticket-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin: 25px auto;
-        }
-
-        #ticketCanvas {
-            width: 100%;
-            max-width: 1536px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .ticket-actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 25px 0;
-        }
-
-        .ticket-actions button {
-            padding: 12px 22px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .ticket-info {
-            margin: 15px auto;
-            max-width: 700px;
-        }
-
-        .ticket-loading {
-            font-size: 18px;
-            margin: 30px;
-        }
-    </style>
 </head>
+
 
 <body>
 
-<main class="ticket-page">
+<main
+    class="ticket-page"
+    style="
+        max-width:1100px;
+        margin:0 auto;
+        text-align:center;
+    "
+>
 
     <h1>North Star Navigation</h1>
 
@@ -66,33 +34,99 @@
 
     <hr>
 
-    <p id="loadingMessage" class="ticket-loading">
+
+    <p
+        id="loadingMessage"
+        style="
+            font-size:18px;
+            margin:30px;
+        "
+    >
         Generating your ticket...
     </p>
 
-    <div class="ticket-wrapper">
-        <canvas id="ticketCanvas"></canvas>
+
+    <div
+        style="
+            width:100%;
+            overflow-x:auto;
+            margin:25px auto;
+        "
+    >
+
+        <canvas
+            id="ticketCanvas"
+            style="
+                width:100%;
+                max-width:1536px;
+                height:auto;
+                display:block;
+                margin:0 auto;
+            "
+        ></canvas>
+
     </div>
 
-    <div id="ticketInfo" class="ticket-info"></div>
 
-    <div class="ticket-actions">
+    <div
+        id="ticketInfo"
+        style="
+            margin:15px auto;
+            max-width:700px;
+        "
+    ></div>
 
-        <button type="button" id="downloadButton">
+
+    <div
+        style="
+            display:flex;
+            justify-content:center;
+            gap:12px;
+            flex-wrap:wrap;
+            margin:25px 0;
+        "
+    >
+
+        <button
+            type="button"
+            id="downloadButton"
+            style="
+                padding:12px 22px;
+                font-size:16px;
+                cursor:pointer;
+            "
+        >
             DOWNLOAD TICKET
         </button>
 
-        <button type="button" id="lobbyButton">
+
+        <button
+            type="button"
+            id="lobbyButton"
+            style="
+                padding:12px 22px;
+                font-size:16px;
+                cursor:pointer;
+            "
+        >
             ENTER LOBBY
         </button>
 
     </div>
 
+
     <button
         type="button"
-        onclick="location.href='index.html'">
+        onclick="location.href='index.html'"
+        style="
+            padding:10px 20px;
+            font-size:16px;
+            cursor:pointer;
+        "
+    >
         ← RETURN TO NAVIGATION
     </button>
+
 
 </main>
 
@@ -100,7 +134,7 @@
 <script>
 
 /* =========================================================
-   CANVAS
+   ELEMENTOS
    ========================================================= */
 
 const canvas =
@@ -123,7 +157,7 @@ const lobbyButton =
 
 
 /* =========================================================
-   PASSENGER
+   PASAJERO
    ========================================================= */
 
 const savedPassenger =
@@ -135,8 +169,11 @@ if (!savedPassenger) {
     loadingMessage.textContent =
         "No registration was found.";
 
-    downloadButton.style.display = "none";
-    lobbyButton.style.display = "none";
+    downloadButton.style.display =
+        "none";
+
+    lobbyButton.style.display =
+        "none";
 
     throw new Error(
         "No passenger registration found."
@@ -149,7 +186,7 @@ const passengerData =
 
 
 /* =========================================================
-   CLASS
+   CLASE
    ========================================================= */
 
 function drawClass() {
@@ -158,19 +195,24 @@ function drawClass() {
         Math.random() * 100;
 
     if (random < 15) {
+
         return "first";
+
     }
 
     if (random < 50) {
+
         return "second";
+
     }
 
     return "third";
+
 }
 
 
 /* =========================================================
-   TICKET TEMPLATES
+   BOLETOS
    ========================================================= */
 
 const ticketTemplates = {
@@ -197,6 +239,7 @@ const ticketTemplates = {
 
     ],
 
+
     second: [
 
         {
@@ -218,6 +261,7 @@ const ticketTemplates = {
         }
 
     ],
+
 
     third: [
 
@@ -245,7 +289,7 @@ const ticketTemplates = {
 
 
 /* =========================================================
-   ROOM RANGES
+   RANGOS DE CAMAROTES
    ========================================================= */
 
 const roomRanges = {
@@ -269,7 +313,7 @@ const roomRanges = {
 
 
 /* =========================================================
-   ROOM
+   CAMAROTE
    ========================================================= */
 
 function getUsedRooms() {
@@ -278,10 +322,13 @@ function getUsedRooms() {
         localStorage.getItem("usedRooms");
 
     if (!stored) {
+
         return [];
+
     }
 
     return JSON.parse(stored);
+
 }
 
 
@@ -291,6 +338,7 @@ function saveUsedRooms(rooms) {
         "usedRooms",
         JSON.stringify(rooms)
     );
+
 }
 
 
@@ -311,15 +359,23 @@ function getAvailableRoom(className) {
         number++
     ) {
 
-        if (!usedRooms.includes(number)) {
+        if (
+            !usedRooms.includes(number)
+        ) {
+
             available.push(number);
+
         }
 
     }
 
 
-    if (available.length === 0) {
+    if (
+        available.length === 0
+    ) {
+
         return null;
+
     }
 
 
@@ -338,12 +394,14 @@ function getAvailableRoom(className) {
 
     saveUsedRooms(usedRooms);
 
+
     return room;
+
 }
 
 
 /* =========================================================
-   FORMAT ROOM
+   FORMATO DEL CAMAROTE
    ========================================================= */
 
 function formatRoomNumber(number) {
@@ -355,26 +413,31 @@ function formatRoomNumber(number) {
 
 
 /* =========================================================
-   DATE
+   FECHA Y HORA
    ========================================================= */
 
 const now =
     new Date();
 
+
 const day =
     String(now.getDate())
         .padStart(2, "0");
+
 
 const month =
     String(now.getMonth() + 1)
         .padStart(2, "0");
 
+
 const year =
     now.getFullYear();
+
 
 const hours =
     String(now.getHours())
         .padStart(2, "0");
+
 
 const minutes =
     String(now.getMinutes())
@@ -384,12 +447,13 @@ const minutes =
 const registrationDate =
     `${day}/${month}/${year}`;
 
+
 const registrationTime =
     `${hours}:${minutes}`;
 
 
 /* =========================================================
-   GENERATE CLASS
+   GENERAR CLASE
    ========================================================= */
 
 const className =
@@ -397,7 +461,7 @@ const className =
 
 
 /* =========================================================
-   GENERATE ROOM
+   GENERAR CAMAROTE
    ========================================================= */
 
 const roomNumber =
@@ -409,12 +473,16 @@ if (roomNumber === null) {
     loadingMessage.textContent =
         "There are no available places in this class.";
 
-    downloadButton.style.display = "none";
-    lobbyButton.style.display = "none";
+    downloadButton.style.display =
+        "none";
+
+    lobbyButton.style.display =
+        "none";
 
     throw new Error(
         "No available room in selected class."
     );
+
 }
 
 
@@ -423,7 +491,7 @@ const formattedRoom =
 
 
 /* =========================================================
-   SELECT TEMPLATE
+   SELECCIONAR BOLETO
    ========================================================= */
 
 const templates =
@@ -440,24 +508,13 @@ const selectedTemplate =
 
 
 /* =========================================================
-   DATA
+   DATOS DEL BOLETO
    ========================================================= */
-
-/*
-   IMPORTANTE:
-   Cada dato tiene su propia variable.
-   No se mezclan entre sí.
-*/
 
 const passenger =
     passengerData.characterName ||
     "PASAJERO";
 
-
-/*
-   Como passenger.html todavía no pregunta
-   categoría, usamos PASAJERO.
-*/
 
 const category =
     "PASAJERO";
@@ -477,7 +534,7 @@ const code =
 
 
 /* =========================================================
-   LOAD IMAGE
+   IMAGEN
    ========================================================= */
 
 const ticketImage =
@@ -487,9 +544,10 @@ const ticketImage =
 ticketImage.onload =
     function () {
 
-        /*
-         * Tamaño REAL del PNG
-         */
+
+        /* -----------------------------------------------
+           DIMENSIONES ORIGINALES
+           ----------------------------------------------- */
 
         canvas.width =
             ticketImage.naturalWidth;
@@ -498,9 +556,9 @@ ticketImage.onload =
             ticketImage.naturalHeight;
 
 
-        /*
-         * Limpiar completamente el canvas
-         */
+        /* -----------------------------------------------
+           LIMPIAR
+           ----------------------------------------------- */
 
         ctx.clearRect(
             0,
@@ -510,9 +568,9 @@ ticketImage.onload =
         );
 
 
-        /*
-         * Dibujar boleto original
-         */
+        /* -----------------------------------------------
+           BOLETO
+           ----------------------------------------------- */
 
         ctx.drawImage(
             ticketImage,
@@ -522,7 +580,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           TEXTO
+           TEXTO DEL BOLETO
            ================================================= */
 
         ctx.fillStyle =
@@ -531,13 +589,16 @@ ticketImage.onload =
         ctx.textBaseline =
             "middle";
 
+        ctx.textAlign =
+            "left";
+
+
+        /* -----------------------------------------------
+           PASAJERO
+           ----------------------------------------------- */
+
         ctx.font =
             "bold 26px Georgia, serif";
-
-
-        /* =================================================
-           PASAJERO
-           ================================================= */
 
         ctx.fillText(
             passenger,
@@ -546,9 +607,9 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
+        /* -----------------------------------------------
            CATEGORÍA
-           ================================================= */
+           ----------------------------------------------- */
 
         ctx.fillText(
             category,
@@ -557,9 +618,9 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
+        /* -----------------------------------------------
            CAMAROTE
-           ================================================= */
+           ----------------------------------------------- */
 
         ctx.fillText(
             cabin,
@@ -568,9 +629,9 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
+        /* -----------------------------------------------
            DESTINO
-           ================================================= */
+           ----------------------------------------------- */
 
         ctx.fillText(
             destination,
@@ -580,7 +641,6 @@ ticketImage.onload =
 
 
         /* =================================================
-           FECHA
            PANEL DERECHO
            ================================================= */
 
@@ -590,6 +650,11 @@ ticketImage.onload =
         ctx.textAlign =
             "center";
 
+
+        /* -----------------------------------------------
+           FECHA
+           ----------------------------------------------- */
+
         ctx.fillText(
             registrationDate,
             1300,
@@ -597,10 +662,9 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
+        /* -----------------------------------------------
            CÓDIGO
-           PANEL DERECHO
-           ================================================= */
+           ----------------------------------------------- */
 
         ctx.fillText(
             code,
@@ -609,16 +673,16 @@ ticketImage.onload =
         );
 
 
-        /*
-         * Regresar alineación normal
-         */
+        /* -----------------------------------------------
+           RESTABLECER ALINEACIÓN
+           ----------------------------------------------- */
 
         ctx.textAlign =
             "left";
 
 
         /* =================================================
-           SAVE DATA
+           GUARDAR INFORMACIÓN
            ================================================= */
 
         const generatedTicket = {
@@ -665,7 +729,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           INFORMATION
+           MOSTRAR INFORMACIÓN
            ================================================= */
 
         loadingMessage.style.display =
@@ -709,7 +773,7 @@ ticketImage.onload =
 
 
 /* =========================================================
-   IMAGE ERROR
+   ERROR DE IMAGEN
    ========================================================= */
 
 ticketImage.onerror =
@@ -732,7 +796,7 @@ ticketImage.src =
 
 
 /* =========================================================
-   DOWNLOAD PNG
+   DESCARGAR PNG
    ========================================================= */
 
 downloadButton.addEventListener(
@@ -742,13 +806,16 @@ downloadButton.addEventListener(
         const link =
             document.createElement("a");
 
+
         link.download =
             `White-Star-Ticket-${code}.png`;
+
 
         link.href =
             canvas.toDataURL(
                 "image/png"
             );
+
 
         link.click();
 
@@ -773,4 +840,5 @@ lobbyButton.addEventListener(
 </script>
 
 </body>
-</html>
+
+    </html>
