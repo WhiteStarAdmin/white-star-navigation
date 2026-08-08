@@ -31,7 +31,6 @@
             margin: 30px auto;
             padding: 25px;
             box-sizing: border-box;
-
             border: 2px solid #c9a227;
             border-radius: 12px;
         }
@@ -111,8 +110,6 @@
     <hr>
 
 
-    <!-- LOADING -->
-
     <p
         id="loadingMessage"
         class="ticket-loading"
@@ -120,10 +117,6 @@
         Generating your ticket...
     </p>
 
-
-    <!-- =====================================================
-         COMPLETE TICKET BOX
-         ===================================================== -->
 
     <section
         id="ticketConfirmation"
@@ -136,15 +129,11 @@
         </h3>
 
 
-        <!-- CHARACTER NAME -->
-
         <div
             id="characterDisplay"
             class="character-display"
         ></div>
 
-
-        <!-- TICKET -->
 
         <div class="ticket-wrapper">
 
@@ -155,8 +144,6 @@
         </div>
 
 
-        <!-- INFORMATION -->
-
         <div
             id="ticketInfo"
             class="ticket-details"
@@ -164,10 +151,6 @@
 
     </section>
 
-
-    <!-- =====================================================
-         BUTTONS
-         ===================================================== -->
 
     <div class="ticket-actions">
 
@@ -277,7 +260,7 @@ try {
 
 
 /* =========================================================
-   CHARACTER NAME
+   CHARACTER
    ========================================================= */
 
 const passenger =
@@ -310,20 +293,13 @@ function drawClass() {
     const random =
         Math.random() * 100;
 
-
     if (random < 15) {
-
         return "first";
-
     }
-
 
     if (random < 50) {
-
         return "second";
-
     }
-
 
     return "third";
 
@@ -358,7 +334,6 @@ const ticketTemplates = {
 
     ],
 
-
     second: [
 
         {
@@ -380,7 +355,6 @@ const ticketTemplates = {
         }
 
     ],
-
 
     third: [
 
@@ -440,19 +414,14 @@ function getUsedRooms() {
     const stored =
         localStorage.getItem("usedRooms");
 
-
     if (!stored) {
-
         return [];
-
     }
-
 
     try {
 
         const rooms =
             JSON.parse(stored);
-
 
         return Array.isArray(rooms)
             ? rooms
@@ -489,8 +458,7 @@ function getAvailableRoom(className) {
     const usedRooms =
         getUsedRooms();
 
-    const available =
-        [];
+    const available = [];
 
 
     for (
@@ -569,7 +537,7 @@ function escapeHTML(text) {
 
 
 /* =========================================================
-   DATE
+   DATE AND TIME
    ========================================================= */
 
 const now =
@@ -648,7 +616,7 @@ const formattedRoom =
 
 
 /* =========================================================
-   SELECT TICKET
+   SELECT TEMPLATE
    ========================================================= */
 
 const templates =
@@ -685,7 +653,7 @@ const code =
 
 
 /* =========================================================
-   LOAD IMAGE
+   LOAD ORIGINAL TICKET
    ========================================================= */
 
 const ticketImage =
@@ -694,11 +662,6 @@ const ticketImage =
 
 ticketImage.onload =
     function () {
-
-
-        /* =================================================
-           CANVAS SIZE
-           ================================================= */
 
         canvas.width =
             ticketImage.naturalWidth;
@@ -715,9 +678,7 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
-           ORIGINAL TICKET
-           ================================================= */
+        /* ORIGINAL PNG */
 
         ctx.drawImage(
             ticketImage,
@@ -727,7 +688,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           TEXT
+           PERSONALIZED TEXT
            ================================================= */
 
         ctx.fillStyle =
@@ -788,12 +749,16 @@ ticketImage.onload =
             "bold 24px Georgia, serif";
 
 
+        /* DATE */
+
         ctx.fillText(
             registrationDate,
             1300,
             320
         );
 
+
+        /* CODE */
 
         ctx.fillText(
             code,
@@ -850,7 +815,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           SHOW COMPLETE BOX
+           SHOW TICKET
            ================================================= */
 
         loadingMessage.style.display =
@@ -927,7 +892,7 @@ ticketImage.onerror =
 
 
 /* =========================================================
-   START IMAGE
+   START IMAGE LOAD
    ========================================================= */
 
 ticketImage.src =
@@ -935,12 +900,26 @@ ticketImage.src =
 
 
 /* =========================================================
-   DOWNLOAD COMPLETE BOX
+   DOWNLOAD COMPLETE TICKET
    ========================================================= */
 
 downloadButton.addEventListener(
     "click",
     function () {
+
+        if (
+            !ticketImage.complete ||
+            !ticketImage.naturalWidth
+        ) {
+
+            alert(
+                "Please wait until the ticket has loaded."
+            );
+
+            return;
+
+        }
+
 
         const downloadCanvas =
             document.createElement("canvas");
@@ -949,13 +928,38 @@ downloadButton.addEventListener(
             downloadCanvas.getContext("2d");
 
 
-        /* SIZE */
-
         const width =
             1600;
 
+
+        const ticketWidth =
+            1400;
+
+
+        const scale =
+            ticketWidth /
+            ticketImage.naturalWidth;
+
+
+        const ticketHeight =
+            ticketImage.naturalHeight *
+            scale;
+
+
+        const ticketX =
+            (width - ticketWidth) / 2;
+
+
+        const ticketY =
+            175;
+
+
         const height =
-            1050;
+            Math.ceil(
+                ticketY +
+                ticketHeight +
+                250
+            );
 
 
         downloadCanvas.width =
@@ -965,9 +969,7 @@ downloadButton.addEventListener(
             height;
 
 
-        /* =================================================
-           BACKGROUND
-           ================================================= */
+        /* BACKGROUND */
 
         downloadCtx.fillStyle =
             "#0b1b2b";
@@ -980,9 +982,7 @@ downloadButton.addEventListener(
         );
 
 
-        /* =================================================
-           BORDER
-           ================================================= */
+        /* BORDER */
 
         downloadCtx.strokeStyle =
             "#c9a227";
@@ -998,9 +998,7 @@ downloadButton.addEventListener(
         );
 
 
-        /* =================================================
-           TITLE
-           ================================================= */
+        /* TITLE */
 
         downloadCtx.fillStyle =
             "#ffffff";
@@ -1012,15 +1010,13 @@ downloadButton.addEventListener(
             "bold 42px Georgia, serif";
 
         downloadCtx.fillText(
-            "Ticket generated successfully.",
+            "NORTH STAR NAVIGATION",
             width / 2,
-            80
+            75
         );
 
 
-        /* =================================================
-           CHARACTER
-           ================================================= */
+        /* CHARACTER */
 
         downloadCtx.font =
             "bold 30px Georgia, serif";
@@ -1028,33 +1024,13 @@ downloadButton.addEventListener(
         downloadCtx.fillText(
             "Character: " + passenger,
             width / 2,
-            130
+            125
         );
 
 
         /* =================================================
-           TICKET
+           DRAW ORIGINAL TICKET
            ================================================= */
-
-        const ticketWidth =
-            1400;
-
-
-        const ticketHeight =
-            ticketImage.naturalHeight *
-            (
-                ticketWidth /
-                ticketImage.naturalWidth
-            );
-
-
-        const ticketX =
-            (width - ticketWidth) / 2;
-
-
-        const ticketY =
-            175;
-
 
         downloadCtx.drawImage(
             ticketImage,
@@ -1066,18 +1042,8 @@ downloadButton.addEventListener(
 
 
         /* =================================================
-           ADD PERSONALIZED TEXT TO DOWNLOAD
+           PERSONALIZE DOWNLOADED TICKET
            ================================================= */
-
-        /*
-         * The downloaded version must contain
-         * the same personalized ticket.
-         */
-
-        const scale =
-            ticketWidth /
-            ticketImage.naturalWidth;
-
 
         downloadCtx.fillStyle =
             "#171717";
@@ -1092,12 +1058,16 @@ downloadButton.addEventListener(
             `bold ${26 * scale}px Georgia, serif`;
 
 
+        /* PASSENGER */
+
         downloadCtx.fillText(
             passenger,
             ticketX + (355 * scale),
             ticketY + (219 * scale)
         );
 
+
+        /* CATEGORY */
 
         downloadCtx.fillText(
             category,
@@ -1106,12 +1076,16 @@ downloadButton.addEventListener(
         );
 
 
+        /* CABIN */
+
         downloadCtx.fillText(
             cabin,
             ticketX + (555 * scale),
             ticketY + (330 * scale)
         );
 
+
+        /* DESTINATION */
 
         downloadCtx.fillText(
             destination,
@@ -1120,5 +1094,50 @@ downloadButton.addEventListener(
         );
 
 
+        /* RIGHT PANEL */
+
         downloadCtx.textAlign =
-       
+            "center";
+
+        downloadCtx.font =
+            `bold ${24 * scale}px Georgia, serif`;
+
+
+        /* DATE */
+
+        downloadCtx.fillText(
+            registrationDate,
+            ticketX + (1300 * scale),
+            ticketY + (320 * scale)
+        );
+
+
+        /* CODE */
+
+        downloadCtx.fillText(
+            code,
+            ticketX + (1300 * scale),
+            ticketY + (418 * scale)
+        );
+
+
+        /* =================================================
+           EXTRA INFORMATION
+           ================================================= */
+
+        const infoY =
+            ticketY +
+            ticketHeight +
+            65;
+
+
+        downloadCtx.fillStyle =
+            "#ffffff";
+
+        downloadCtx.font =
+            "22px Georgia, serif";
+
+
+        downloadCtx.fillText(
+            `Class: ${className.toUpperCase()}   |   Cabin: ${cabin}`,
+            
