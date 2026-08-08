@@ -25,39 +25,49 @@
             text-align: center;
         }
 
+        .ticket-confirmation {
+            width: 100%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 25px;
+            box-sizing: border-box;
+
+            border: 2px solid #c9a227;
+            border-radius: 12px;
+        }
+
+        .ticket-confirmation h3 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .character-display {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
         .ticket-wrapper {
             width: 100%;
             overflow-x: auto;
-            margin: 25px auto;
+            margin: 20px auto;
         }
 
         #ticketCanvas {
             width: 100%;
-            max-width: 1536px;
             height: auto;
             display: block;
             margin: 0 auto;
         }
 
-        .ticket-confirmation {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 25px;
-            border: 2px solid #c9a227;
-            border-radius: 10px;
-            box-sizing: border-box;
-        }
-
-        .ticket-confirmation h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 26px;
-        }
-
         .ticket-details {
-            margin-top: 20px;
+            margin: 25px auto 5px auto;
             font-size: 18px;
-            line-height: 1.7;
+            line-height: 1.8;
+        }
+
+        .ticket-details strong {
+            font-weight: bold;
         }
 
         .ticket-loading {
@@ -101,6 +111,8 @@
     <hr>
 
 
+    <!-- LOADING -->
+
     <p
         id="loadingMessage"
         class="ticket-loading"
@@ -110,7 +122,7 @@
 
 
     <!-- =====================================================
-         CONFIRMATION BOX
+         COMPLETE TICKET BOX
          ===================================================== -->
 
     <section
@@ -124,9 +136,15 @@
         </h3>
 
 
-        <!-- =================================================
-             TICKET IMAGE
-             ================================================= -->
+        <!-- CHARACTER NAME -->
+
+        <div
+            id="characterDisplay"
+            class="character-display"
+        ></div>
+
+
+        <!-- TICKET -->
 
         <div class="ticket-wrapper">
 
@@ -137,9 +155,7 @@
         </div>
 
 
-        <!-- =================================================
-             TICKET INFORMATION
-             ================================================= -->
+        <!-- INFORMATION -->
 
         <div
             id="ticketInfo"
@@ -160,7 +176,7 @@
             id="downloadButton"
             style="display:none;"
         >
-            DOWNLOAD TICKET
+            DOWNLOAD COMPLETE TICKET
         </button>
 
 
@@ -203,6 +219,9 @@ const loadingMessage =
 const ticketConfirmation =
     document.getElementById("ticketConfirmation");
 
+const characterDisplay =
+    document.getElementById("characterDisplay");
+
 const ticketInfo =
     document.getElementById("ticketInfo");
 
@@ -214,7 +233,7 @@ const lobbyButton =
 
 
 /* =========================================================
-   GET PASSENGER
+   PASSENGER DATA
    ========================================================= */
 
 const savedPassenger =
@@ -226,7 +245,8 @@ if (!savedPassenger) {
     loadingMessage.textContent =
         "No passenger registration was found.";
 
-    lobbyButton.style.display = "none";
+    lobbyButton.style.display =
+        "none";
 
     throw new Error(
         "No passenger registration found."
@@ -248,7 +268,8 @@ try {
     loadingMessage.textContent =
         "The passenger registration is invalid.";
 
-    lobbyButton.style.display = "none";
+    lobbyButton.style.display =
+        "none";
 
     throw error;
 
@@ -270,7 +291,8 @@ if (!passenger) {
     loadingMessage.textContent =
         "A Character Name is required.";
 
-    lobbyButton.style.display = "none";
+    lobbyButton.style.display =
+        "none";
 
     throw new Error(
         "Character Name is missing."
@@ -432,14 +454,9 @@ function getUsedRooms() {
             JSON.parse(stored);
 
 
-        if (Array.isArray(rooms)) {
-
-            return rooms;
-
-        }
-
-
-        return [];
+        return Array.isArray(rooms)
+            ? rooms
+            : [];
 
     } catch {
 
@@ -449,10 +466,6 @@ function getUsedRooms() {
 
 }
 
-
-/* =========================================================
-   SAVE ROOMS
-   ========================================================= */
 
 function saveUsedRooms(rooms) {
 
@@ -465,7 +478,7 @@ function saveUsedRooms(rooms) {
 
 
 /* =========================================================
-   GET ROOM
+   GET AVAILABLE ROOM
    ========================================================= */
 
 function getAvailableRoom(className) {
@@ -476,7 +489,8 @@ function getAvailableRoom(className) {
     const usedRooms =
         getUsedRooms();
 
-    const available = [];
+    const available =
+        [];
 
 
     for (
@@ -539,7 +553,23 @@ function formatRoomNumber(number) {
 
 
 /* =========================================================
-   DATE AND TIME
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   DATE
    ========================================================= */
 
 const now =
@@ -603,7 +633,8 @@ if (roomNumber === null) {
     loadingMessage.textContent =
         "There are no available places in this class.";
 
-    lobbyButton.style.display = "none";
+    lobbyButton.style.display =
+        "none";
 
     throw new Error(
         "No available room."
@@ -617,7 +648,7 @@ const formattedRoom =
 
 
 /* =========================================================
-   SELECT TEMPLATE
+   SELECT TICKET
    ========================================================= */
 
 const templates =
@@ -654,7 +685,7 @@ const code =
 
 
 /* =========================================================
-   LOAD TICKET IMAGE
+   LOAD IMAGE
    ========================================================= */
 
 const ticketImage =
@@ -685,7 +716,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           DRAW ORIGINAL PNG
+           ORIGINAL TICKET
            ================================================= */
 
         ctx.drawImage(
@@ -696,7 +727,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           TEXT SETTINGS
+           TEXT
            ================================================= */
 
         ctx.fillStyle =
@@ -712,9 +743,7 @@ ticketImage.onload =
             "bold 26px Georgia, serif";
 
 
-        /* =================================================
-           CHARACTER NAME
-           ================================================= */
+        /* PASSENGER */
 
         ctx.fillText(
             passenger,
@@ -723,9 +752,7 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
-           CATEGORY
-           ================================================= */
+        /* CATEGORY */
 
         ctx.fillText(
             category,
@@ -734,9 +761,7 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
-           CABIN
-           ================================================= */
+        /* CABIN */
 
         ctx.fillText(
             cabin,
@@ -745,9 +770,7 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
-           DESTINATION
-           ================================================= */
+        /* DESTINATION */
 
         ctx.fillText(
             destination,
@@ -756,9 +779,7 @@ ticketImage.onload =
         );
 
 
-        /* =================================================
-           RIGHT PANEL
-           ================================================= */
+        /* RIGHT PANEL */
 
         ctx.textAlign =
             "center";
@@ -767,16 +788,12 @@ ticketImage.onload =
             "bold 24px Georgia, serif";
 
 
-        /* DATE */
-
         ctx.fillText(
             registrationDate,
             1300,
             320
         );
 
-
-        /* CODE */
 
         ctx.fillText(
             code,
@@ -785,12 +802,8 @@ ticketImage.onload =
         );
 
 
-        ctx.textAlign =
-            "left";
-
-
         /* =================================================
-           SAVE DATA
+           SAVE GENERATED TICKET
            ================================================= */
 
         const generatedTicket = {
@@ -837,7 +850,7 @@ ticketImage.onload =
 
 
         /* =================================================
-           SHOW CONFIRMATION
+           SHOW COMPLETE BOX
            ================================================= */
 
         loadingMessage.style.display =
@@ -852,47 +865,34 @@ ticketImage.onload =
             "inline-block";
 
 
+        characterDisplay.innerHTML =
+            `Character: ${escapeHTML(passenger)}`;
+
+
         ticketInfo.innerHTML = `
 
-            <strong>
-                Character:
-            </strong>
-            ${escapeHTML(passenger)}
-
-            <br>
-
-            <strong>
-                Class:
-            </strong>
+            <strong>Class:</strong>
             ${className.toUpperCase()}
 
             <br>
 
-            <strong>
-                Cabin:
-            </strong>
-            ${cabin}
+            <strong>Cabin:</strong>
+            ${escapeHTML(cabin)}
 
             <br>
 
-            <strong>
-                Date:
-            </strong>
+            <strong>Date:</strong>
             ${registrationDate}
 
             <br>
 
-            <strong>
-                Time:
-            </strong>
+            <strong>Time:</strong>
             ${registrationTime}
 
             <br>
 
-            <strong>
-                Code:
-            </strong>
-            ${code}
+            <strong>Code:</strong>
+            ${escapeHTML(code)}
 
         `;
 
@@ -927,23 +927,7 @@ ticketImage.onerror =
 
 
 /* =========================================================
-   ESCAPE TEXT
-   ========================================================= */
-
-function escapeHTML(text) {
-
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   START IMAGE LOAD
+   START IMAGE
    ========================================================= */
 
 ticketImage.src =
@@ -951,36 +935,27 @@ ticketImage.src =
 
 
 /* =========================================================
-   DOWNLOAD COMPLETE TICKET
+   DOWNLOAD COMPLETE BOX
    ========================================================= */
 
 downloadButton.addEventListener(
     "click",
     function () {
 
-        /*
-         * Create a second canvas containing:
-         *
-         * 1. Confirmation background
-         * 2. Character name
-         * 3. Ticket
-         * 4. Ticket information
-         */
-
         const downloadCanvas =
             document.createElement("canvas");
-
 
         const downloadCtx =
             downloadCanvas.getContext("2d");
 
 
+        /* SIZE */
+
         const width =
             1600;
 
-
         const height =
-            950;
+            1050;
 
 
         downloadCanvas.width =
@@ -990,7 +965,9 @@ downloadButton.addEventListener(
             height;
 
 
-        /* Background */
+        /* =================================================
+           BACKGROUND
+           ================================================= */
 
         downloadCtx.fillStyle =
             "#0b1b2b";
@@ -1003,23 +980,27 @@ downloadButton.addEventListener(
         );
 
 
-        /* Border */
+        /* =================================================
+           BORDER
+           ================================================= */
 
         downloadCtx.strokeStyle =
             "#c9a227";
 
         downloadCtx.lineWidth =
-            4;
+            5;
 
         downloadCtx.strokeRect(
-            25,
-            25,
-            width - 50,
-            height - 50
+            20,
+            20,
+            width - 40,
+            height - 40
         );
 
 
-        /* Title */
+        /* =================================================
+           TITLE
+           ================================================= */
 
         downloadCtx.fillStyle =
             "#ffffff";
@@ -1031,13 +1012,15 @@ downloadButton.addEventListener(
             "bold 42px Georgia, serif";
 
         downloadCtx.fillText(
-            "NORTH STAR NAVIGATION",
+            "Ticket generated successfully.",
             width / 2,
-            85
+            80
         );
 
 
-        /* Character */
+        /* =================================================
+           CHARACTER
+           ================================================= */
 
         downloadCtx.font =
             "bold 30px Georgia, serif";
@@ -1045,14 +1028,16 @@ downloadButton.addEventListener(
         downloadCtx.fillText(
             "Character: " + passenger,
             width / 2,
-            135
+            130
         );
 
 
-        /* Ticket */
+        /* =================================================
+           TICKET
+           ================================================= */
 
         const ticketWidth =
-            1350;
+            1400;
 
 
         const ticketHeight =
@@ -1063,66 +1048,77 @@ downloadButton.addEventListener(
             );
 
 
+        const ticketX =
+            (width - ticketWidth) / 2;
+
+
+        const ticketY =
+            175;
+
+
         downloadCtx.drawImage(
             ticketImage,
-            (width - ticketWidth) / 2,
-            170,
+            ticketX,
+            ticketY,
             ticketWidth,
             ticketHeight
         );
 
 
-        /* Information */
+        /* =================================================
+           ADD PERSONALIZED TEXT TO DOWNLOAD
+           ================================================= */
+
+        /*
+         * The downloaded version must contain
+         * the same personalized ticket.
+         */
+
+        const scale =
+            ticketWidth /
+            ticketImage.naturalWidth;
+
 
         downloadCtx.fillStyle =
-            "#ffffff";
+            "#171717";
+
+        downloadCtx.textAlign =
+            "left";
+
+        downloadCtx.textBaseline =
+            "middle";
 
         downloadCtx.font =
-            "22px Georgia, serif";
-
-
-        const infoY =
-            800;
+            `bold ${26 * scale}px Georgia, serif`;
 
 
         downloadCtx.fillText(
-            `Class: ${className.toUpperCase()}   |   Cabin: ${cabin}`,
-            width / 2,
-            infoY
+            passenger,
+            ticketX + (355 * scale),
+            ticketY + (219 * scale)
         );
 
 
         downloadCtx.fillText(
-            `Date: ${registrationDate}   |   Time: ${registrationTime}`,
-            width / 2,
-            infoY + 35
+            category,
+            ticketX + (355 * scale),
+            ticketY + (275 * scale)
         );
 
 
         downloadCtx.fillText(
-            `Code: ${code}`,
-            width / 2,
-            infoY + 70
+            cabin,
+            ticketX + (555 * scale),
+            ticketY + (330 * scale)
         );
 
 
-        /* Download */
-
-        const link =
-            document.createElement("a");
-
-
-        link.download =
-            `White-Star-Ticket-${code}.png`;
+        downloadCtx.fillText(
+            destination,
+            ticketX + (525 * scale),
+            ticketY + (386 * scale)
+        );
 
 
-        link.href =
-            downloadCanvas.toDataURL(
-                "image/png"
-            );
-
-
-        link.click();
-
-    }
-);
+        downloadCtx.textAlign =
+       
