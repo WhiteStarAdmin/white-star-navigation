@@ -183,7 +183,11 @@
 
 <script>
 
-"use strict";
+window.addEventListener("error", function (event) {
+    document.getElementById("loadingMessage").textContent =
+        "ERROR: " + event.message;
+    document.getElementById("loadingMessage").style.color = "#ff6666";
+});
 
 
 /* =========================================================
